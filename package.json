@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && webpack --mode production",
-    "dev": "webpack serve --open",
-    "go": "rm -rf dist && webpack --mode production && webpack serve --open"
+    "dev": "webpack serve --open"
   },
   "repository": {
     "type": "git",
