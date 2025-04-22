@@ -82,3 +82,27 @@ editPopup.addEventListener('click', closeOverlay)
 addPopup.addEventListener('click', closeOverlay)
 
 imageTypePopup.addEventListener('click', closeOverlay)
+
+const regex = /^[а-яА-Яa-zA-Z\- ]+$/;
+const formError = formEditProfile.querySelector(`.${nameInput.id}-error`)
+
+
+function showInputError(element) {
+  element.classList.add('popup__input_error')
+  formError.classList.add('popup__input-error-text-active')
+}
+
+function hideInputError(element) {
+  element.classList.remove('popup__input_error')
+  formError.classList.remove('popup__input-error-text-active')
+}
+
+function isValid () {
+  if (!nameInput.validity.valid) {
+    showInputError(nameInput)
+  } else {
+    hideInputError(nameInput)
+  }
+}
+
+nameInput.addEventListener('input', isValid)
