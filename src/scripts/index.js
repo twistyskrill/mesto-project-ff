@@ -1,7 +1,9 @@
 import '../pages/index.css';
 import { initialCards } from './cards.js';
-import { createCard, likeCard, removeCard } from './card.js';
+import { createCard, likeCard, removeCard, templateCard } from './card.js';
 import { openPopup, closePopup, closeOverlay} from './modal.js';
+import { clearValidation, enableValidation } from './validation.js';
+
 
 
 const cardList = document.querySelector('.places__list'); 
@@ -21,7 +23,15 @@ const formNewPlace = document.querySelector('form[name="new-place"]')
 const cardNameInput = formNewPlace.querySelector('.popup__input_type_card-name');
 const cardLinkInput = formNewPlace.querySelector('.popup__input_type_url');
 const captionPopup = document.querySelector('.popup__caption');
-const newCardsArray = [];
+const settings = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_inactive',
+  inputErrorClass: 'popup__input_error',
+  errorClass: 'popup__input-error-text-active'
+}
+
 
 function handleFormEditProfileSubmit(evt) {
   evt.preventDefault(); 
@@ -34,8 +44,7 @@ formEditProfile.addEventListener('submit', handleFormEditProfileSubmit);
 
 function handleFormAddCardSubmit(evt) {
   evt.preventDefault();
-  newCardsArray.unshift({name: cardNameInput.value, link: cardLinkInput.value});
-  const newPlaceCard = createCard(newCardsArray[0], removeCard, likeCard, openImage);
+  const newPlaceCard = createCard({name: cardNameInput.value, link: cardLinkInput.value}, removeCard, likeCard, openImage);
   cardList.prepend(newPlaceCard);
   closePopup(addPopup);
   formNewPlace.reset();
@@ -56,6 +65,7 @@ initialCards.forEach(item => {
 }); 
 
 editButton.addEventListener('click', () => {
+  clearValidation(formEditProfile, settings)
   openPopup(editPopup);
   nameInput.value = document.querySelector('.profile__title').textContent;
   jobInput.value = document.querySelector('.profile__description').textContent;
@@ -66,6 +76,8 @@ editCloseButton.addEventListener('click', () => {
 })
 
 addButton.addEventListener('click', () => {
+  formNewPlace.reset();
+  clearValidation(formNewPlace, settings)
   openPopup(addPopup)
 })
 
@@ -83,26 +95,5 @@ addPopup.addEventListener('click', closeOverlay)
 
 imageTypePopup.addEventListener('click', closeOverlay)
 
-const regex = /^[а-яА-Яa-zA-Z\- ]+$/;
-const formError = formEditProfile.querySelector(`.${nameInput.id}-error`)
 
-
-function showInputError(element) {
-  element.classList.add('popup__input_error')
-  formError.classList.add('popup__input-error-text-active')
-}
-
-function hideInputError(element) {
-  element.classList.remove('popup__input_error')
-  formError.classList.remove('popup__input-error-text-active')
-}
-
-function isValid () {
-  if (!nameInput.validity.valid) {
-    showInputError(nameInput)
-  } else {
-    hideInputError(nameInput)
-  }
-}
-
-nameInput.addEventListener('input', isValid)
+enableValidation(settings);
