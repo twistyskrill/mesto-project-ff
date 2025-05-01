@@ -1,9 +1,8 @@
 import '../pages/index.css';
-import { initialCards } from './cards.js';
 import { createCard, likeCard, removeCard, templateCard } from './card.js';
 import { openPopup, closePopup, closeOverlay} from './modal.js';
 import { clearValidation, enableValidation } from './validation.js';
-
+import { getInitialCards, getUserData, formEditAPI, avatarEditAPI, addCardAPI} from './api.js';
 
 
 const cardList = document.querySelector('.places__list'); 
@@ -26,6 +25,11 @@ const captionPopup = document.querySelector('.popup__caption');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
+const formAvatarEdit = document.querySelector('form[name="avatar-profile"]');
+const avatarInput = formAvatarEdit.querySelector('.popup__input_type_avatar');
+const avatarPopup = document.querySelector('.popup_profile_avatar');
+const avatarCloseButton = avatarPopup.querySelector('.popup__close');
+
 const settings = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -35,42 +39,48 @@ const settings = {
   errorClass: 'popup__input-error-text-active'
 }
 
+function renderButton (formElement, settings, isLoading) {
+  const saveButton = formElement.querySelector(settings.submitButtonSelector);
+  if (isLoading) {
+    saveButton.textContent = 'Сохранение...'
+  } else {
+    saveButton.textContent = 'Сохранить'
+  }
+  
+}
 
 function handleFormEditProfileSubmit(evt) {
   evt.preventDefault(); 
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
-  fetch('https://nomoreparties.co/v1/wff-cohort-32/users/me', {
-    method: 'PATCH',
-    headers: {
-      authorization: '22e04659-805d-44c0-ad1a-8811974e7812',
-      'Content-Type': 'application/json' 
-    },
-    body: JSON.stringify({
-      name: profileTitle.textContent,
-      about: profileDescription.textContent
-    })
+  renderButton(formEditProfile, settings, true);
+  formEditAPI(profileTitle, profileDescription)
+  .finally(() => {
+    renderButton(formEditProfile, settings, false)
   })
   closePopup(editPopup);
 }
 
+
 formEditProfile.addEventListener('submit', handleFormEditProfileSubmit); 
+
+function handleAvatarEditSubmit(evt) {
+  evt.preventDefault();
+  profileImage.style.backgroundImage = `url(${avatarInput.value})`;
+  renderButton(formAvatarEdit, settings, true);
+  avatarEditAPI(avatarInput)
+  .finally(() => {
+    renderButton(formAvatarEdit, settings, false);
+  })
+  closePopup(avatarPopup)
+}
+
+formAvatarEdit.addEventListener('submit', handleAvatarEditSubmit)
 
 function handleFormAddCardSubmit(evt) {
   evt.preventDefault();
-  
-  fetch('https://nomoreparties.co/v1/wff-cohort-32/cards', {
-    method: 'POST',
-    headers: {
-      authorization: '22e04659-805d-44c0-ad1a-8811974e7812',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name: cardNameInput.value,
-      link: cardLinkInput.value
-    })
-  })
-  .then(res => res.json())
+  renderButton(formNewPlace, settings, true);
+  addCardAPI(cardNameInput, cardLinkInput)
   .then(newCard => {
      getUserData()
       .then(userData => {
@@ -79,6 +89,9 @@ function handleFormAddCardSubmit(evt) {
         closePopup(addPopup);
         formNewPlace.reset();
     });
+  })
+  .finally(() => {
+    renderButton(formNewPlace, settings, false);
   })
 }
 
@@ -123,26 +136,9 @@ addPopup.addEventListener('click', closeOverlay)
 
 imageTypePopup.addEventListener('click', closeOverlay)
 
+avatarPopup.addEventListener('click', closeOverlay)
 
 enableValidation(settings);
-
-export function getUserData() {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-32/users/me', {
-    headers: {
-      authorization: '22e04659-805d-44c0-ad1a-8811974e7812'
-      }
-    })
-    .then((res) => res.json())
-}
-
-function getInitialCards() {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-32/cards', {
-    headers: {
-      authorization: '22e04659-805d-44c0-ad1a-8811974e7812'
-    }
-  }) 
-    .then((res) => res.json())
-}
 
 const request = [
   getUserData(),
@@ -161,5 +157,14 @@ Promise.all(request)
     });
 })
 
+profileImage.addEventListener('click', () => {
+  formAvatarEdit.reset()
+  clearValidation(formAvatarEdit, settings)
+  openPopup(avatarPopup)
+})
+
+avatarCloseButton.addEventListener('click', () => {
+  closePopup(avatarPopup)
+})
 
 

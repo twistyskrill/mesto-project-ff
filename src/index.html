@@ -32,6 +32,25 @@
       © 2021 Mesto Russia
     </p>
   </footer>
+  <div class="popup popup_profile_avatar popup_is-animated">
+    <div class="popup__content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="avatar-profile" novalidate>
+        <input type="url"
+                required
+                name="avatar"
+                id="avatar-input"
+                class="popup__input popup__input_type_avatar"
+                placeholder="Ссылка на картинку"
+                pattern="https?://.+"
+                data-error-message="Введите адрес сайта."
+        >
+        <span class="popup__input-error-text avatar-input-error"></span>
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
   <div class="popup popup_type_edit popup_is-animated">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
@@ -39,12 +58,12 @@
       <form class="popup__form" name="edit-profile" novalidate>
         <input type="text" 
                 required
-                pattern="^[а-яА-Яa-zA-Z\- ]+$" 
+                pattern="^[а-яА-Яa-zA-ZёЁ\- ]+$" 
                 id="name-input" 
                 name="name" 
                 class="popup__input popup__input_type_name" 
                 placeholder="Имя" 
-                required minlength="2" 
+                minlength="2" 
                 maxlength="40"
                 data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
           >

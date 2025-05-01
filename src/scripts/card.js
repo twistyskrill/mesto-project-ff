@@ -1,5 +1,4 @@
 export const templateCard = document.querySelector('#card-template').content; 
-import { getUserData } from "./index.js";
 
 export function createCard(cardData, deleteCard, likeCard, openImage, userData) { 
     const card = templateCard.cloneNode(true); 
