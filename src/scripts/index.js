@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import { createCard, likeCard, removeCard, templateCard } from './card.js';
+import { createCard, likeCard, removeCard } from './card.js';
 import { openPopup, closePopup, closeOverlay} from './modal.js';
 import { clearValidation, enableValidation } from './validation.js';
 import { getInitialCards, getUserData, formEditAPI, avatarEditAPI, addCardAPI} from './api.js';
@@ -90,6 +90,7 @@ function handleFormAddCardSubmit(evt) {
         formNewPlace.reset();
     });
   })
+  .catch((err) => console.log(err))
   .finally(() => {
     renderButton(formNewPlace, settings, false);
   })
